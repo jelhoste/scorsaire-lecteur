@@ -1,6 +1,6 @@
 // Service worker of the Scorsaire Lecteur: the application keeps working without a network (a stage, a rehearsal room). Network first so that a new version arrives as soon
 // as there is a connection, the cache otherwise. INCREMENT CACHE_VERSION with every new publication, or an installed copy keeps showing the old one.
-const CACHE_VERSION = 'scorsaire-lecteur-20261031-2153';
+const CACHE_VERSION = 'scorsaire-lecteur-20261031-2156';
 const PRECACHE_URLS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
