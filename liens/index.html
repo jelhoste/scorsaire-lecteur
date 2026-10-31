@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorsaire — faire un lien</title>
+<style>
+  :root { color-scheme: light dark; --bg: #faf8f4; --ink: #1c1b1a; --soft: #5a5750; --line: #c9c4b8; --btn: #fdfcfa; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #131313; --ink: #f2f1ee; --soft: #b5b2aa; --line: #4a4a4a; --btn: #1f1f1f; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p, label { color: var(--soft); font-size: 14px; }
+  label { display: block; margin: 14px 0 4px; color: var(--ink); font-weight: 600; }
+  select, input, button, textarea { font: inherit; color: var(--ink); background: var(--btn); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; box-sizing: border-box; min-height: 44px; }
+  button { cursor: pointer; width: auto; padding: 0 16px; margin-top: 8px; }
+  output { display: block; margin-top: 14px; padding: 10px; border: 1px dashed var(--line); border-radius: 8px; word-break: break-all; min-height: 1.4em; }
+  a { color: inherit; }
+  .hint { font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Faire un lien Scorsaire</h1>
+  <p>Choisissez le lecteur, indiquez où se trouve votre fichier <code>.scorsaire</code>, copiez le lien et envoyez-le.</p>
+  <label for="reader">Lecteur</label>
+  <select id="reader">
+    <option value="">Recueil (setlist, hors ligne) : fichiers .scorsaire-recueil ou .scorsaire</option>
+    <option value="synchro/">Synchro : partition qui suit un enregistrement ou une vidéo YouTube</option>
+    <option value="youtube/">YouTube : fragments de partition sur une vidéo</option>
+    <option value="feuilles/">Feuilles : les feuilles de l'écran 3</option>
+  </select>
+  <label for="file">Adresse du fichier</label>
+  <input id="file" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="synchros/ma-chanson.scorsaire  ou  https://…/ma-chanson.scorsaire">
+  <p class="hint">Un chemin sans « https:// » est compté depuis la racine de ce site (<span id="base"></span>). Le fichier doit être publié sur un site qui autorise les lectures depuis d'autres pages (ce site, ou <code>raw.githubusercontent.com</code>).</p>
+  <label>Lien à envoyer</label>
+  <output id="out" aria-live="polite"></output>
+  <button id="copy" type="button">Copier le lien</button> <button id="open" type="button">Essayer</button>
+  <p id="msg" class="hint"></p>
+</main>
+<script>
+(function () {
+  var site = new URL('../', location.href); // this page is in a folder of the site: the root is one level up
+  var $ = function (id) { return document.getElementById(id); };
+  $('base').textContent = site.href;
+  function link() {
+    var file = $('file').value.trim();
+    if (!file) return '';
+    var abs = /^[a-z][a-z0-9+.-]*:/i.test(file) ? file : new URL(file.replace(/^\/+/, ''), site).href;
+    return new URL($('reader').value, site).href + '?file=' + encodeURIComponent(abs);
+  }
+  function show() { var l = link(); $('out').textContent = l || 'Indiquez l\'adresse du fichier.'; $('out').dataset.link = l; $('msg').textContent = ''; }
+  ['input', 'change'].forEach(function (e) { $('file').addEventListener(e, show); $('reader').addEventListener(e, show); });
+  $('copy').addEventListener('click', function () {
+    var l = $('out').dataset.link; if (!l) return;
+    (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function () { $('msg').textContent = 'Lien copié.'; }, function () { $('msg').textContent = 'Sélectionnez le lien ci-dessus et copiez-le.'; });
+  });
+  $('open').addEventListener('click', function () { var l = $('out').dataset.link; if (l) window.open(l, '_blank', 'noopener'); });
+  show();
+})();
+</script>
+</body>
+</html>
