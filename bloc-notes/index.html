@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Scorsaire — bloc-notes, essai</title>
+<style>
+  html{--md-sys-color-surface:#fff;--md-sys-color-on-surface:#1c1b1f}
+  html[data-theme=sombre]{--md-sys-color-surface:#1c1b1f;--md-sys-color-on-surface:#e6e1e5;--md-sys-color-surface-container:#2b2930;--md-sys-color-outline:#938f99;--md-sys-color-outline-variant:#49454f;--md-sys-color-primary:#d0bcff;--md-sys-color-on-primary:#381e72;--md-sys-color-on-surface-variant:#cac4d0;background:#121212;color:#e6e1e5}
+  body{margin:0;padding:1rem;max-width:40rem;margin-inline:auto;font-family:system-ui,sans-serif}
+  /* Hostile portal CSS: the component must not be touched by it */
+  body :is(div,button,p){font-family:Comic Sans MS,cursive !important}
+</style>
+</head>
+<body>
+<p><label><input type="checkbox" id="dark"> thème sombre</label></p>
+<p><label>Son : <select id="soundmode"><option value="family">un fichier par famille (option 2)</option><option value="single">un seul fichier (option 1)</option><option value="light">moteur léger (sans SoundFont)</option></select></label></p>
+<p id="status">Réglages : —</p>
+<scorsaire-note id="n" lang="fr"></scorsaire-note>
+<script type="module">
+  import './scorsaire-note-view.js';
+  const el = document.getElementById('n');
+  const res = await fetch('demo-note.json'); el.value = await res.text();
+  el.addEventListener('settingschange', (e) => { document.getElementById('status').textContent = 'Réglages : ' + JSON.stringify(e.detail); });
+  document.getElementById('soundmode').onchange = (e) => el.setAttribute('sound-mode', e.target.value);
+  document.getElementById('dark').onchange = (e) => { document.documentElement.dataset.theme = e.target.checked ? 'sombre' : ''; };
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Scorsaire — bloc-notes, éditeur</title>
+<style>
+  html{--md-sys-color-surface:#fff;--md-sys-color-on-surface:#1c1b1f}
+  body{margin:0;padding:.5rem;max-width:56rem;margin-inline:auto;font-family:system-ui,sans-serif}
+  body :is(div,button,p){font-family:Comic Sans MS,cursive !important}
+  pre{white-space:pre-wrap;word-break:break-all;font-size:.75rem;max-height:8rem;overflow:auto}
+</style>
+</head>
+<body>
+<p><label>Son : <select id="soundmode"><option value="family">un fichier par famille (option 2)</option><option value="single">un seul fichier (option 1)</option><option value="light">moteur léger (sans SoundFont)</option></select></label></p>
+<scorsaire-note id="n" mode="edit" lang="fr"></scorsaire-note>
+<p id="status">—</p>
+<pre id="out"></pre>
+<script type="module">
+  import './scorsaire-note-edit.js';
+  const el = document.getElementById('n');
+  document.getElementById('soundmode').onchange = (e) => el.setAttribute('sound-mode', e.target.value);
+  const set = (t) => { document.getElementById('status').textContent = t; };
+  el.addEventListener('change', (e) => { set('change : ' + e.detail.value.length + ' octets'); document.getElementById('out').textContent = e.detail.value; });
+  el.addEventListener('save', (e) => set('save : ' + e.detail.value.length + ' octets'));
+  el.addEventListener('prefschange', (e) => set('prefs : ' + JSON.stringify(e.detail)));
+</script>
+</body>
+</html>
